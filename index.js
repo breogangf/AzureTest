@@ -37,15 +37,29 @@ async function showContainerNames(aborter, serviceURL) {
     } while (marker);
 }
 
+async function uploadLocalFile(aborter, containerURL, filePath) {
+
+    filePath = path.resolve(filePath);
+
+    const fileName = path.basename(filePath);
+    const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, fileName);
+
+    return await uploadFileToBlockBlob(aborter, filePath, blockBlobURL);
+}
+
 async function execute() {
 
-    const containerName = "test";
+    const containerTestName = "test";
+    const containerPrivateName = "private";
+    const localFilePath = "./picture.jpg";
 
     const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY);
     const pipeline = StorageURL.newPipeline(credentials);
     const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net`, pipeline);
 
-    const containerURL = ContainerURL.fromServiceURL(serviceURL, containerName);
+    const containerTestURL = ContainerURL.fromServiceURL(serviceURL, containerTestName);
+    const containerPrivateURL = ContainerURL.fromServiceURL(serviceURL, containerPrivateName);
+
     const aborter = Aborter.timeout(30 * ONE_MINUTE);
 
     console.log("Kinton test just started!\n");
@@ -53,13 +67,17 @@ async function execute() {
     console.log("Let me list all your containers:");
     await showContainerNames(aborter, serviceURL);
 
-    console.log(`\nLet's create a new ${containerName} container`)
-    await containerURL.create(aborter);
-    console.log(` - Container: "${containerName}" was created ✓`);
+    console.log(`\nLet's create a new ${containerTestName} container`)
+    await containerTestURL.create(aborter);
+    console.log(` - Container: "${containerTestName}" was created ✓`);
 
-    console.log(`\nLet's remove your ${containerName} container`);
-    await containerURL.delete(aborter);
-    console.log(` - Container "${containerName}" was deleted ✓`);
+    console.log(`\nLet's remove your ${containerTestName} container`);
+    await containerTestURL.delete(aborter);
+    console.log(` - Container "${containerTestName}" was deleted ✓`);
+
+    console.log(`\nLet's upload a local file: ${localFilePath} to your private container`);
+    await uploadLocalFile(aborter, containerPrivateURL, localFilePath);
+    console.log(` - Local file "${localFilePath}" was uploaded to your private container ✓`);
 }
 
 execute().then(() => console.log("\nAll done ")).catch((e) => console.log(e));
