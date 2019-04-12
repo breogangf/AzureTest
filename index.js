@@ -17,10 +17,9 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const STORAGE_ACCOUNT_NAME = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-const ACCOUNT_ACCESS_KEY = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+const ACCOUNT_ACCESS_KEY = process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY;
 
 const ONE_MEGABYTE = 1024 * 1024;
-const FOUR_MEGABYTES = 4 * ONE_MEGABYTE;
 const ONE_MINUTE = 60 * 1000;
 
 async function showContainerNames(aborter, serviceURL) {
@@ -66,7 +65,8 @@ async function execute() {
     const containerTestName = "test";
     const containerPrivateName = "private";
     const containerPublicName = 'public';
-    const localFilePath = "./picture.jpg";
+    const fileName = 'picture.jpg';
+    const localFilePath = `./${fileName}`;
 
     const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY);
     const pipeline = StorageURL.newPipeline(credentials);
@@ -104,6 +104,14 @@ async function execute() {
 
     console.log(`\nLet's list all the files in "${containerPublicName}" container:`);
     await showBlobNames(aborter, containerPublicURL);
+
+    console.log(`\nLets download ${fileName} from your private container`);
+    const picturePrivateURL = BlockBlobURL.fromContainerURL(containerPrivateURL, fileName);
+    console.log(` - You can't download the picture from: ${picturePrivateURL.url}`);
+
+    console.log(`\nLets download ${fileName} from your public container`);
+    const picturePublicURL = BlockBlobURL.fromContainerURL(containerPublicURL, fileName);
+    console.log(` - You can download the picture from: ${picturePublicURL.url}`);
 }
 
 execute().then(() => console.log("\nAll done ")).catch((e) => console.log(e));
