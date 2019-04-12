@@ -56,6 +56,10 @@ async function execute() {
     console.log(`\nLet's create a new ${containerName} container`)
     await containerURL.create(aborter);
     console.log(` - Container: "${containerName}" was created ✓`);
+
+    console.log(`\nLet's remove your ${containerName} container`);
+    await containerURL.delete(aborter);
+    console.log(` - Container "${containerName}" was deleted ✓`);
 }
 
 execute().then(() => console.log("\nAll done ")).catch((e) => console.log(e));
