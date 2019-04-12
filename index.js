@@ -65,6 +65,7 @@ async function execute() {
 
     const containerTestName = "test";
     const containerPrivateName = "private";
+    const containerPublicName = 'public';
     const localFilePath = "./picture.jpg";
 
     const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY);
@@ -73,6 +74,7 @@ async function execute() {
 
     const containerTestURL = ContainerURL.fromServiceURL(serviceURL, containerTestName);
     const containerPrivateURL = ContainerURL.fromServiceURL(serviceURL, containerPrivateName);
+    const containerPublicURL = ContainerURL.fromServiceURL(serviceURL, containerPublicName);
 
     const aborter = Aborter.timeout(30 * ONE_MINUTE);
 
@@ -95,6 +97,13 @@ async function execute() {
 
     console.log(`\nLet's list all the files in "${containerPrivateName}" container:`);
     await showBlobNames(aborter, containerPrivateURL);
+
+    console.log(`\nLet's upload a local file: ${localFilePath} to your public container`);
+    await uploadLocalFile(aborter, containerPublicURL, localFilePath);
+    console.log(` - Local file "${localFilePath}" was uploaded to your public container ✓`);
+
+    console.log(`\nLet's list all the files in "${containerPublicName}" container:`);
+    await showBlobNames(aborter, containerPublicURL);
 }
 
 execute().then(() => console.log("\nAll done ")).catch((e) => console.log(e));
