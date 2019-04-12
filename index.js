@@ -42,7 +42,6 @@ async function execute() {
     const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY);
     const pipeline = StorageURL.newPipeline(credentials);
     const serviceURL = new ServiceURL(`https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net`, pipeline);
-    
     const aborter = Aborter.timeout(30 * ONE_MINUTE);
 
     console.log("Kinton test just started!\n");
