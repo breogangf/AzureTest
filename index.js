@@ -47,6 +47,20 @@ async function uploadLocalFile(aborter, containerURL, filePath) {
     return await uploadFileToBlockBlob(aborter, filePath, blockBlobURL);
 }
 
+async function showBlobNames(aborter, containerURL) {
+
+    let response;
+    let marker;
+
+    do {
+        response = await containerURL.listBlobFlatSegment(aborter);
+        marker = response.marker;
+        for(let blob of response.segment.blobItems) {
+            console.log(` - ${ blob.name }`);
+        }
+    } while (marker);
+}
+
 async function execute() {
 
     const containerTestName = "test";
@@ -78,6 +92,9 @@ async function execute() {
     console.log(`\nLet's upload a local file: ${localFilePath} to your private container`);
     await uploadLocalFile(aborter, containerPrivateURL, localFilePath);
     console.log(` - Local file "${localFilePath}" was uploaded to your private container ✓`);
+
+    console.log(`\nLet's list all the files in "${containerPrivateName}" container:`);
+    await showBlobNames(aborter, containerPrivateURL);
 }
 
 execute().then(() => console.log("\nAll done ")).catch((e) => console.log(e));
