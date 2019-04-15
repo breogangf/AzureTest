@@ -31,8 +31,8 @@ async function showContainerNames(aborter, serviceURL) {
     do {
         response = await serviceURL.listContainersSegment(aborter, marker);
         marker = response.marker;
-        for(let container of response.containerItems) {
-            console.log(` - ${ container.name } ${checkMark}`);
+        for (let container of response.containerItems) {
+            console.log(` - ${container.name} ${checkMark}`);
         }
     } while (marker);
 }
@@ -55,8 +55,8 @@ async function showBlobNames(aborter, containerURL) {
     do {
         response = await containerURL.listBlobFlatSegment(aborter);
         marker = response.marker;
-        for(let blob of response.segment.blobItems) {
-            console.log(` - ${ blob.name } ${checkMark}`);
+        for (let blob of response.segment.blobItems) {
+            console.log(` - ${blob.name} ${checkMark}`);
         }
     } while (marker);
 }
@@ -113,4 +113,12 @@ async function execute() {
     console.log(` - You \x1b[92mcan\x1b[0m download the picture from: ${picturePublicURL.url} ${checkMark}`);
 }
 
-execute().then(() => console.log(`\nAll tests finished ${checkMark}\n`)).catch((e) => console.log(e));
+execute()
+    .then(() => console.log(`\nAll tests finished ${checkMark}\n`))
+    .catch((e) => {
+        if (e.request.url.includes('HERE_YOUR_NAME')) {
+            console.log('Error: Please fill your credentials in .env file first')
+        } else {
+            console.log(e);
+        }
+    });
