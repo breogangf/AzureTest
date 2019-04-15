@@ -11,6 +11,7 @@ const {
 
 const fs = require("fs");
 const path = require("path");
+const checkMark = '\x1b[92m✓\x1b[0m';
 
 if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
@@ -31,7 +32,7 @@ async function showContainerNames(aborter, serviceURL) {
         response = await serviceURL.listContainersSegment(aborter, marker);
         marker = response.marker;
         for(let container of response.containerItems) {
-            console.log(` - ${ container.name } ✓`);
+            console.log(` - ${ container.name } ${checkMark}`);
         }
     } while (marker);
 }
@@ -55,7 +56,7 @@ async function showBlobNames(aborter, containerURL) {
         response = await containerURL.listBlobFlatSegment(aborter);
         marker = response.marker;
         for(let blob of response.segment.blobItems) {
-            console.log(` - ${ blob.name }`);
+            console.log(` - ${ blob.name } ${checkMark}`);
         }
     } while (marker);
 }
@@ -78,40 +79,38 @@ async function execute() {
 
     const aborter = Aborter.timeout(30 * ONE_MINUTE);
 
-    console.log("Kinton test just started!\n");
-
     console.log("Let me list all your containers:");
     await showContainerNames(aborter, serviceURL);
 
     console.log(`\nLet's create a new ${containerTestName} container`)
     await containerTestURL.create(aborter);
-    console.log(` - Container: "${containerTestName}" was created ✓`);
+    console.log(` - Container: "${containerTestName}" was created ${checkMark}`);
 
     console.log(`\nLet's remove your ${containerTestName} container`);
     await containerTestURL.delete(aborter);
-    console.log(` - Container "${containerTestName}" was deleted ✓`);
+    console.log(` - Container "${containerTestName}" was deleted ${checkMark}`);
 
     console.log(`\nLet's upload a local file: ${localFilePath} to your private container`);
     await uploadLocalFile(aborter, containerPrivateURL, localFilePath);
-    console.log(` - Local file "${localFilePath}" was uploaded to your private container ✓`);
+    console.log(` - Local file "${localFilePath}" was uploaded to your private container ${checkMark}`);
 
     console.log(`\nLet's list all the files in "${containerPrivateName}" container:`);
     await showBlobNames(aborter, containerPrivateURL);
 
     console.log(`\nLet's upload a local file: ${localFilePath} to your public container`);
     await uploadLocalFile(aborter, containerPublicURL, localFilePath);
-    console.log(` - Local file "${localFilePath}" was uploaded to your public container ✓`);
+    console.log(` - Local file "${localFilePath}" was uploaded to your public container ${checkMark}`);
 
     console.log(`\nLet's list all the files in "${containerPublicName}" container:`);
     await showBlobNames(aborter, containerPublicURL);
 
-    console.log(`\nLets download ${fileName} from your private container`);
+    console.log(`\nLets download "${fileName}" from your private container`);
     const picturePrivateURL = BlockBlobURL.fromContainerURL(containerPrivateURL, fileName);
-    console.log(` - You can't download the picture from: ${picturePrivateURL.url}`);
+    console.log(` - You \x1b[31mcan't\x1b[0m download the picture from: ${picturePrivateURL.url} ${checkMark}`);
 
-    console.log(`\nLets download ${fileName} from your public container`);
+    console.log(`\nLets download "${fileName}" from your public container`);
     const picturePublicURL = BlockBlobURL.fromContainerURL(containerPublicURL, fileName);
-    console.log(` - You can download the picture from: ${picturePublicURL.url}`);
+    console.log(` - You \x1b[92mcan\x1b[0m download the picture from: ${picturePublicURL.url} ${checkMark}`);
 }
 
-execute().then(() => console.log("\nAll done ")).catch((e) => console.log(e));
+execute().then(() => console.log(`\nAll tests finished ${checkMark}\n`)).catch((e) => console.log(e));
