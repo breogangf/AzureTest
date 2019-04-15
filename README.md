@@ -1,4 +1,4 @@
-# Kiton Test
+# Kinton Test
 
 Azure Storage test suite written in NodeJS
 
