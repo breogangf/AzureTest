@@ -1,1 +1,33 @@
-node_modules
+
+# Created by https://www.gitignore.io/api/node,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=node,visualstudiocode
+
+### Node ###
+# Logs
+logs
+*.log
+npm-debug.log*
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+# End of https://www.gitignore.io/api/node,visualstudiocode
