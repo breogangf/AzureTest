@@ -5,14 +5,14 @@ const {
   ServiceURL,
   SharedKeyCredential,
   StorageURL,
-  uploadStreamToBlockBlob,
-  uploadFileToBlockBlob,
+  uploadFileToBlockBlob
 } = require('@azure/storage-blob');
 
 const fs = require('fs');
 const path = require('path');
 
 const checkMark = '\x1b[92m✓\x1b[0m';
+const fileSystemHelper = require('./helpers/fileSystem');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -42,8 +42,13 @@ async function uploadLocalFile(aborter, containerURL, filePath) {
 
   const fileName = path.basename(filePath);
   const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, fileName);
+  const blobOptions = {
+    blobHTTPHeaders: {
+      blobContentType: `image/${fileSystemHelper.getFileExtension(filePath)}`
+    }
+  };
 
-  return await uploadFileToBlockBlob(aborter, filePath, blockBlobURL);
+  return await uploadFileToBlockBlob(aborter, filePath, blockBlobURL, blobOptions);
 }
 
 async function showBlobNames(aborter, containerURL) {
