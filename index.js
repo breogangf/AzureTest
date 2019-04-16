@@ -63,7 +63,7 @@ async function execute() {
   const containerTestName = 'test';
   const containerPrivateName = 'private';
   const containerPublicName = 'public';
-  const fileName = 'picture.jpg';
+  const fileName = '1fb9fb9a44ef9d32addbe42e9bb85bd7.jpg';
   const localFilePath = `./${fileName}`;
 
   const credentials = new SharedKeyCredential(STORAGE_ACCOUNT_NAME, ACCOUNT_ACCESS_KEY);
